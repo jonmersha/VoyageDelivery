@@ -111,25 +111,25 @@ const Navbar = ({ user, onLogin, onLogout, setPage, language, setLanguage, t }: 
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-stone-200">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-border-subtle">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => setPage('home')}>
-            <div className="bg-stone-900 p-2 rounded-lg">
+            <div className="bg-primary p-2 rounded-lg shadow-lg shadow-primary/20">
               <Plane className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-stone-900">{t('appName')}</span>
+            <span className="text-xl font-bold tracking-tight text-text-main">{t('appName')}</span>
           </div>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
-            <button onClick={() => setPage('trips')} className="text-sm font-medium text-stone-600 hover:text-stone-900">{t('findTrips')}</button>
-            <button onClick={() => setPage('requests')} className="text-sm font-medium text-stone-600 hover:text-stone-900">{t('deliveryRequests')}</button>
+            <button onClick={() => setPage('trips')} className="text-sm font-medium text-text-muted hover:text-primary transition-colors">{t('findTrips')}</button>
+            <button onClick={() => setPage('requests')} className="text-sm font-medium text-text-muted hover:text-primary transition-colors">{t('deliveryRequests')}</button>
             
             <select 
               value={language} 
               onChange={(e) => setLanguage(e.target.value as Language)}
-              className="text-sm font-medium text-stone-600 bg-transparent border-none focus:ring-0 cursor-pointer"
+              className="text-sm font-medium text-text-muted bg-transparent border-none focus:ring-0 cursor-pointer hover:text-primary transition-colors"
             >
               <option value="en">English</option>
               <option value="ar">العربية</option>
@@ -139,20 +139,20 @@ const Navbar = ({ user, onLogin, onLogout, setPage, language, setLanguage, t }: 
 
             {user ? (
               <div className="flex items-center gap-4">
-                <button onClick={() => setPage('post-trip')} className="px-4 py-2 bg-stone-900 text-white rounded-full text-sm font-medium hover:bg-stone-800 transition-all">
+                <button onClick={() => setPage('post-trip')} className="px-4 py-2 bg-primary text-white rounded-full text-sm font-semibold hover:bg-primary-hover transition-all shadow-md shadow-primary/20">
                   {t('postTrip')}
                 </button>
-                <div className="h-8 w-px bg-stone-200" />
-                <button onClick={() => setPage('profile')} className="flex items-center gap-2 text-sm font-medium text-stone-900">
-                  <img src={user.photoURL || ''} alt="" className="w-8 h-8 rounded-full border border-stone-200" />
+                <div className="h-8 w-px bg-border-subtle" />
+                <button onClick={() => setPage('profile')} className="flex items-center gap-2 text-sm font-medium text-text-main">
+                  <img src={user.photoURL || ''} alt="" className="w-8 h-8 rounded-full border border-border-subtle" />
                   <span>{user.displayName?.split(' ')[0]}</span>
                 </button>
-                <button onClick={onLogout} className="p-2 text-stone-400 hover:text-stone-900">
+                <button onClick={onLogout} className="p-2 text-text-muted hover:text-red-500 transition-colors">
                   <LogOut className="w-5 h-5" />
                 </button>
               </div>
             ) : (
-              <button onClick={onLogin} className="px-6 py-2 bg-stone-900 text-white rounded-full text-sm font-medium hover:bg-stone-800 transition-all">
+              <button onClick={onLogin} className="px-6 py-2 bg-primary text-white rounded-full text-sm font-semibold hover:bg-primary-hover transition-all shadow-md shadow-primary/20">
                 {t('signIn')}
               </button>
             )}
@@ -217,50 +217,52 @@ const TripCard = ({ trip, onAction, t }: TripCardProps) => (
     layout
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    className="bg-white rounded-2xl p-6 border border-stone-200 shadow-sm hover:shadow-md transition-all group"
+    className="bg-white rounded-2xl p-6 border border-border-subtle shadow-sm hover:shadow-xl hover:border-primary/20 transition-all group"
   >
     <div className="flex justify-between items-start mb-4">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 font-bold">
+        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
           {trip.travelerName[0]}
         </div>
         <div>
-          <h3 className="font-semibold text-stone-900">{trip.travelerName}</h3>
-          <p className="text-xs text-stone-500">{t('traveler')}</p>
+          <h3 className="font-semibold text-text-main">{trip.travelerName}</h3>
+          <p className="text-xs text-text-muted">{t('traveler')}</p>
         </div>
       </div>
-      <div className="flex items-center gap-1 text-amber-500">
+      <div className="flex items-center gap-1 text-secondary">
         <Star className="w-4 h-4 fill-current" />
-        <span className="text-sm font-medium">4.9</span>
+        <span className="text-sm font-bold">4.9</span>
       </div>
     </div>
 
     <div className="flex items-center gap-4 mb-6">
       <div className="flex-1">
-        <p className="text-xs uppercase tracking-wider text-stone-400 font-bold mb-1">{t('from')}</p>
-        <p className="font-medium text-stone-900 truncate">{trip.origin}</p>
+        <p className="text-[10px] uppercase tracking-wider text-text-muted font-bold mb-1">{t('from')}</p>
+        <p className="font-semibold text-text-main truncate">{trip.origin}</p>
       </div>
-      <ArrowRight className="w-5 h-5 text-stone-300" />
+      <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center">
+        <ArrowRight className="w-4 h-4 text-primary" />
+      </div>
       <div className="flex-1">
-        <p className="text-xs uppercase tracking-wider text-stone-400 font-bold mb-1">{t('to')}</p>
-        <p className="font-medium text-stone-900 truncate">{trip.destination}</p>
+        <p className="text-[10px] uppercase tracking-wider text-text-muted font-bold mb-1">{t('to')}</p>
+        <p className="font-semibold text-text-main truncate">{trip.destination}</p>
       </div>
     </div>
 
     <div className="grid grid-cols-2 gap-4 mb-6">
-      <div className="flex items-center gap-2 text-stone-600">
-        <Calendar className="w-4 h-4" />
-        <span className="text-sm">{format(new Date(trip.travelDate), 'MMM d, yyyy')}</span>
+      <div className="flex items-center gap-2 text-text-muted">
+        <Calendar className="w-4 h-4 text-primary" />
+        <span className="text-sm font-medium">{format(new Date(trip.travelDate), 'MMM d, yyyy')}</span>
       </div>
-      <div className="flex items-center gap-2 text-stone-600">
-        <Weight className="w-4 h-4" />
-        <span className="text-sm">{trip.capacity}</span>
+      <div className="flex items-center gap-2 text-text-muted">
+        <Weight className="w-4 h-4 text-primary" />
+        <span className="text-sm font-medium">{trip.capacity}</span>
       </div>
     </div>
 
     <div className="flex flex-wrap gap-2 mb-6">
       {trip.itemTypes.map(type => (
-        <span key={type} className="px-2 py-1 bg-stone-50 text-stone-600 text-[10px] uppercase tracking-widest font-bold rounded border border-stone-100">
+        <span key={type} className="px-2 py-1 bg-primary/5 text-primary text-[10px] uppercase tracking-widest font-bold rounded-md border border-primary/10">
           {type}
         </span >
       ))}
@@ -268,7 +270,7 @@ const TripCard = ({ trip, onAction, t }: TripCardProps) => (
 
     <button 
       onClick={() => onAction(trip)}
-      className="w-full py-3 bg-stone-50 text-stone-900 rounded-xl font-medium group-hover:bg-stone-900 group-hover:text-white transition-all border border-stone-200 group-hover:border-stone-900"
+      className="w-full py-3 bg-primary text-white rounded-xl font-bold transition-all shadow-md shadow-primary/10 hover:bg-primary-hover hover:shadow-lg hover:shadow-primary/20"
     >
       {t('requestDelivery')}
     </button>
@@ -287,45 +289,47 @@ const RequestCard = ({ request, onAction, t }: RequestCardProps) => (
     layout
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    className="bg-white rounded-2xl p-6 border border-stone-200 shadow-sm hover:shadow-md transition-all group"
+    className="bg-white rounded-2xl p-6 border border-border-subtle shadow-sm hover:shadow-xl hover:border-secondary/20 transition-all group"
   >
     <div className="flex justify-between items-start mb-4">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 font-bold">
+        <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary font-bold">
           {request.requesterName[0]}
         </div>
         <div>
-          <h3 className="font-semibold text-stone-900">{request.itemName}</h3>
-          <p className="text-xs text-stone-500">{t('by')} {request.requesterName}</p>
+          <h3 className="font-semibold text-text-main">{request.itemName}</h3>
+          <p className="text-xs text-text-muted">{t('by')} {request.requesterName}</p>
         </div>
       </div>
-      <div className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-sm font-bold">
+      <div className="px-3 py-1 bg-accent/10 text-accent rounded-full text-sm font-bold">
         ${request.commission}
       </div>
     </div>
 
-    <p className="text-sm text-stone-600 mb-6 line-clamp-2">{request.itemDescription}</p>
+    <p className="text-sm text-text-muted mb-6 line-clamp-2 leading-relaxed">{request.itemDescription}</p>
 
     <div className="flex items-center gap-4 mb-6">
       <div className="flex-1">
-        <p className="text-xs uppercase tracking-wider text-stone-400 font-bold mb-1">{t('pickup')}</p>
-        <p className="font-medium text-stone-900 truncate">{request.origin}</p>
+        <p className="text-[10px] uppercase tracking-wider text-text-muted font-bold mb-1">{t('pickup')}</p>
+        <p className="font-semibold text-text-main truncate">{request.origin}</p>
       </div>
-      <ArrowRight className="w-5 h-5 text-stone-300" />
+      <div className="w-8 h-8 rounded-full bg-secondary/5 flex items-center justify-center">
+        <ArrowRight className="w-4 h-4 text-secondary" />
+      </div>
       <div className="flex-1">
-        <p className="text-xs uppercase tracking-wider text-stone-400 font-bold mb-1">{t('dropoff')}</p>
-        <p className="font-medium text-stone-900 truncate">{request.destination}</p>
+        <p className="text-[10px] uppercase tracking-wider text-text-muted font-bold mb-1">{t('dropoff')}</p>
+        <p className="font-semibold text-text-main truncate">{request.destination}</p>
       </div>
     </div>
 
-    <div className="flex items-center gap-2 text-stone-600 mb-6">
-      <Calendar className="w-4 h-4" />
-      <span className="text-sm">{t('deadline')}: {format(new Date(request.deadline), 'MMM d, yyyy')}</span>
+    <div className="flex items-center gap-2 text-text-muted mb-6">
+      <Calendar className="w-4 h-4 text-secondary" />
+      <span className="text-sm font-medium">{t('deadline')}: {format(new Date(request.deadline), 'MMM d, yyyy')}</span>
     </div>
 
     <button 
       onClick={() => onAction(request)}
-      className="w-full py-3 bg-stone-900 text-white rounded-xl font-medium hover:bg-stone-800 transition-all shadow-lg shadow-stone-200"
+      className="w-full py-3 bg-secondary text-white rounded-xl font-bold transition-all shadow-md shadow-secondary/10 hover:bg-secondary-hover hover:shadow-lg hover:shadow-secondary/20"
     >
       {t('offerToCarry')}
     </button>
@@ -495,7 +499,7 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-stone-50 font-sans text-stone-900" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+      <div className="min-h-screen bg-bg-main font-sans text-text-main" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <Navbar user={user} onLogin={handleLogin} onLogout={handleLogout} setPage={setPage} language={language} setLanguage={setLanguage} t={t} />
 
         <main className="pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -513,26 +517,26 @@ export default function App() {
                   <motion.h1 
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="text-5xl md:text-7xl font-bold tracking-tight text-stone-900 leading-tight"
+                    className="text-5xl md:text-7xl font-extrabold tracking-tight text-text-main leading-tight"
                   >
                     {t('heroTitle')} <br />
-                    <span className="text-stone-400 italic font-serif">{t('heroSubtitle')}</span>
+                    <span className="text-primary italic font-serif">{t('heroSubtitle')}</span>
                   </motion.h1>
-                  <p className="text-xl text-stone-600 max-w-2xl mx-auto">
+                  <p className="text-xl text-text-muted max-w-2xl mx-auto leading-relaxed">
                     {t('heroDesc')}
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <button 
                       onClick={() => setPage('trips')}
-                      className="px-8 py-4 bg-stone-900 text-white rounded-2xl font-semibold text-lg hover:bg-stone-800 transition-all shadow-xl shadow-stone-200 flex items-center justify-center gap-2"
+                      className="px-8 py-4 bg-primary text-white rounded-2xl font-bold text-lg hover:bg-primary-hover transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2"
                     >
                       {t('findTraveler')} <ArrowRight className={cn("w-5 h-5", language === 'ar' && "rotate-180")} />
                     </button>
                     <button 
                       onClick={() => setPage('post-trip')}
-                      className="px-8 py-4 bg-white text-stone-900 border border-stone-200 rounded-2xl font-semibold text-lg hover:bg-stone-50 transition-all flex items-center justify-center gap-2"
+                      className="px-8 py-4 bg-white text-text-main border border-border-subtle rounded-2xl font-bold text-lg hover:bg-bg-main transition-all flex items-center justify-center gap-2 shadow-sm"
                     >
-                      {t('postYourTrip')} <Plus className="w-5 h-5" />
+                      {t('postYourTrip')} <Plus className="w-5 h-5 text-primary" />
                     </button>
                   </div>
                 </section>
@@ -540,16 +544,16 @@ export default function App() {
                 {/* Features */}
                 <section className="grid md:grid-cols-3 gap-8">
                   {[
-                    { icon: Plane, title: t('travelEarn'), desc: t('travelEarnDesc') },
-                    { icon: Package, title: t('fastDelivery'), desc: t('fastDeliveryDesc') },
-                    { icon: CheckCircle2, title: t('trustSafety'), desc: t('trustSafetyDesc') }
+                    { icon: Plane, title: t('travelEarn'), desc: t('travelEarnDesc'), color: 'bg-primary' },
+                    { icon: Package, title: t('fastDelivery'), desc: t('fastDeliveryDesc'), color: 'bg-secondary' },
+                    { icon: CheckCircle2, title: t('trustSafety'), desc: t('trustSafetyDesc'), color: 'bg-accent' }
                   ].map((f, i) => (
-                    <div key={i} className="bg-white p-8 rounded-3xl border border-stone-100 shadow-sm space-y-4">
-                      <div className="w-12 h-12 bg-stone-900 rounded-2xl flex items-center justify-center text-white">
+                    <div key={i} className="bg-white p-8 rounded-3xl border border-border-subtle shadow-sm space-y-4 hover:shadow-md transition-all">
+                      <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg", f.color)}>
                         <f.icon className="w-6 h-6" />
                       </div>
-                      <h3 className="text-xl font-bold">{f.title}</h3>
-                      <p className="text-stone-500 leading-relaxed">{f.desc}</p>
+                      <h3 className="text-xl font-bold text-text-main">{f.title}</h3>
+                      <p className="text-text-muted leading-relaxed">{f.desc}</p>
                     </div>
                   ))}
                 </section>
@@ -566,15 +570,15 @@ export default function App() {
               >
                 <div className="flex flex-col md:flex-row justify-between items-end gap-4">
                   <div>
-                    <h2 className="text-3xl font-bold mb-2">{t('availableTrips')}</h2>
-                    <p className="text-stone-500">{t('findHeading')}</p>
+                    <h2 className="text-3xl font-bold mb-2 text-text-main">{t('availableTrips')}</h2>
+                    <p className="text-text-muted">{t('findHeading')}</p>
                   </div>
                   <div className="relative w-full md:w-96">
-                    <Search className={cn("absolute top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400", language === 'ar' ? "right-4" : "left-4")} />
+                    <Search className={cn("absolute top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted", language === 'ar' ? "right-4" : "left-4")} />
                     <input 
                       type="text" 
                       placeholder={t('searchPlaceholder')} 
-                      className={cn("w-full py-3 bg-white border border-stone-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-stone-900/10 transition-all", language === 'ar' ? "pr-12 pl-4" : "pl-12 pr-4")}
+                      className={cn("w-full py-3 bg-white border border-border-subtle rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm", language === 'ar' ? "pr-12 pl-4" : "pl-12 pr-4")}
                     />
                   </div>
                 </div>
@@ -584,10 +588,12 @@ export default function App() {
                     <TripCard key={trip.id || idx} trip={trip} onAction={() => setPage('post-request')} t={t} />
                   ))}
                   {trips.length === 0 && (
-                    <div className="col-span-full py-24 text-center space-y-4 bg-white rounded-3xl border border-dashed border-stone-200">
-                      <Plane className="w-12 h-12 text-stone-200 mx-auto" />
-                      <p className="text-stone-400 font-medium">{t('noTrips')}</p>
-                      <button onClick={() => setPage('post-trip')} className="text-stone-900 font-bold underline">{t('postTrip')}</button>
+                    <div className="col-span-full py-24 text-center space-y-4 bg-white rounded-3xl border border-dashed border-border-subtle">
+                      <div className="w-16 h-16 bg-bg-main rounded-full flex items-center justify-center mx-auto">
+                        <Plane className="w-8 h-8 text-text-muted" />
+                      </div>
+                      <p className="text-text-muted font-medium">{t('noTrips')}</p>
+                      <button onClick={() => setPage('post-trip')} className="text-primary font-bold hover:underline">{t('postTrip')}</button>
                     </div>
                   )}
                 </div>
@@ -604,12 +610,12 @@ export default function App() {
               >
                 <div className="flex flex-col md:flex-row justify-between items-end gap-4">
                   <div>
-                    <h2 className="text-3xl font-bold mb-2">{t('deliveryRequests')}</h2>
-                    <p className="text-stone-500">{t('fastDeliveryDesc')}</p>
+                    <h2 className="text-3xl font-bold mb-2 text-text-main">{t('deliveryRequests')}</h2>
+                    <p className="text-text-muted">{t('fastDeliveryDesc')}</p>
                   </div>
                   <button 
                     onClick={() => setPage('post-request')}
-                    className="px-6 py-3 bg-stone-900 text-white rounded-2xl font-bold flex items-center gap-2"
+                    className="px-6 py-3 bg-secondary text-white rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-secondary/20 hover:bg-secondary-hover transition-all"
                   >
                     <Plus className="w-5 h-5" /> {t('postRequest')}
                   </button>
@@ -620,9 +626,11 @@ export default function App() {
                     <RequestCard key={request.id || idx} request={request} onAction={() => {}} t={t} />
                   ))}
                   {requests.length === 0 && (
-                    <div className="col-span-full py-24 text-center space-y-4 bg-white rounded-3xl border border-dashed border-stone-200">
-                      <Package className="w-12 h-12 text-stone-200 mx-auto" />
-                      <p className="text-stone-400 font-medium">{t('noRequests')}</p>
+                    <div className="col-span-full py-24 text-center space-y-4 bg-white rounded-3xl border border-dashed border-border-subtle">
+                      <div className="w-16 h-16 bg-bg-main rounded-full flex items-center justify-center mx-auto">
+                        <Package className="w-8 h-8 text-text-muted" />
+                      </div>
+                      <p className="text-text-muted font-medium">{t('noRequests')}</p>
                     </div>
                   )}
                 </div>
@@ -634,28 +642,28 @@ export default function App() {
                 key="post-trip"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="max-w-2xl mx-auto bg-white rounded-3xl p-8 border border-stone-200 shadow-xl"
+                className="max-w-2xl mx-auto bg-white rounded-3xl p-8 border border-border-subtle shadow-xl"
               >
-                <h2 className="text-3xl font-bold mb-8">{t('postTravelRoute')}</h2>
+                <h2 className="text-3xl font-bold mb-8 text-text-main">{t('postTravelRoute')}</h2>
                 <form onSubmit={handlePostTrip} className="space-y-6">
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('originCity')}</label>
-                      <input name="origin" required placeholder="e.g. London" className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
+                      <label className="text-xs font-bold uppercase tracking-wider text-text-muted">{t('originCity')}</label>
+                      <input name="origin" required placeholder="e.g. London" className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('destinationCity')}</label>
-                      <input name="destination" required placeholder="e.g. New York" className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
+                      <label className="text-xs font-bold uppercase tracking-wider text-text-muted">{t('destinationCity')}</label>
+                      <input name="destination" required placeholder="e.g. New York" className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20" />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('travelDate')}</label>
-                      <input name="date" type="date" required className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
+                      <label className="text-xs font-bold uppercase tracking-wider text-text-muted">{t('travelDate')}</label>
+                      <input name="date" type="date" required className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('capacity')}</label>
-                      <select name="capacity" className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10">
+                      <label className="text-xs font-bold uppercase tracking-wider text-text-muted">{t('capacity')}</label>
+                      <select name="capacity" className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20">
                         <option value="Small">{t('small')}</option>
                         <option value="Medium">{t('medium')}</option>
                         <option value="Large">{t('large')}</option>
@@ -663,10 +671,10 @@ export default function App() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('itemTypes')}</label>
-                    <input name="types" placeholder="e.g. Documents, Electronics, Gifts" className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
+                    <label className="text-xs font-bold uppercase tracking-wider text-text-muted">{t('itemTypes')}</label>
+                    <input name="types" placeholder="e.g. Documents, Electronics, Gifts" className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20" />
                   </div>
-                  <button type="submit" className="w-full py-4 bg-stone-900 text-white rounded-2xl font-bold text-lg hover:bg-stone-800 transition-all">
+                  <button type="submit" className="w-full py-4 bg-primary text-white rounded-2xl font-bold text-lg hover:bg-primary-hover transition-all shadow-lg shadow-primary/20">
                     {t('publishTrip')}
                   </button>
                 </form>
@@ -678,39 +686,39 @@ export default function App() {
                 key="post-request"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="max-w-2xl mx-auto bg-white rounded-3xl p-8 border border-stone-200 shadow-xl"
+                className="max-w-2xl mx-auto bg-white rounded-3xl p-8 border border-border-subtle shadow-xl"
               >
-                <h2 className="text-3xl font-bold mb-8">{t('requestDeliveryTitle')}</h2>
+                <h2 className="text-3xl font-bold mb-8 text-text-main">{t('requestDeliveryTitle')}</h2>
                 <form onSubmit={handlePostRequest} className="space-y-6">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('itemName')}</label>
-                    <input name="itemName" required placeholder="e.g. MacBook Charger" className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
+                    <label className="text-xs font-bold uppercase tracking-wider text-text-muted">{t('itemName')}</label>
+                    <input name="itemName" required placeholder="e.g. MacBook Charger" className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('description')}</label>
-                    <textarea name="description" rows={3} placeholder="Tell the traveler about the item..." className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
+                    <label className="text-xs font-bold uppercase tracking-wider text-text-muted">{t('description')}</label>
+                    <textarea name="description" rows={3} placeholder="Tell the traveler about the item..." className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20" />
                   </div>
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('pickupFrom')}</label>
-                      <input name="origin" required placeholder="City" className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
+                      <label className="text-xs font-bold uppercase tracking-wider text-text-muted">{t('pickupFrom')}</label>
+                      <input name="origin" required placeholder="City" className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('deliverTo')}</label>
-                      <input name="destination" required placeholder="City" className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
+                      <label className="text-xs font-bold uppercase tracking-wider text-text-muted">{t('deliverTo')}</label>
+                      <input name="destination" required placeholder="City" className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20" />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('deadline')}</label>
-                      <input name="deadline" type="date" required className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
+                      <label className="text-xs font-bold uppercase tracking-wider text-text-muted">{t('deadline')}</label>
+                      <input name="deadline" type="date" required className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('commission')}</label>
-                      <input name="commission" type="number" required placeholder="e.g. 25" className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
+                      <label className="text-xs font-bold uppercase tracking-wider text-text-muted">{t('commission')}</label>
+                      <input name="commission" type="number" required placeholder="e.g. 25" className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20" />
                     </div>
                   </div>
-                  <button type="submit" className="w-full py-4 bg-stone-900 text-white rounded-2xl font-bold text-lg hover:bg-stone-800 transition-all">
+                  <button type="submit" className="w-full py-4 bg-secondary text-white rounded-2xl font-bold text-lg hover:bg-secondary-hover transition-all shadow-lg shadow-secondary/20">
                     {t('postRequestBtn')}
                   </button>
                 </form>
@@ -725,37 +733,50 @@ export default function App() {
                 exit={{ opacity: 0 }}
                 className="max-w-4xl mx-auto space-y-12"
               >
-                <div className="bg-white rounded-3xl p-12 border border-stone-200 shadow-sm flex flex-col md:flex-row items-center gap-12">
-                  <img src={user.photoURL || ''} alt="" className="w-48 h-48 rounded-full border-8 border-stone-50 shadow-inner" />
+                <div className="bg-white rounded-3xl p-12 border border-border-subtle shadow-sm flex flex-col md:flex-row items-center gap-12">
+                  <div className="relative">
+                    <img src={user.photoURL || ''} alt="" className="w-48 h-48 rounded-full border-8 border-bg-main shadow-inner object-cover" />
+                    <div className="absolute bottom-4 right-4 w-10 h-10 bg-accent rounded-full border-4 border-white flex items-center justify-center text-white">
+                      <CheckCircle2 className="w-5 h-5" />
+                    </div>
+                  </div>
                   <div className="space-y-4 text-center md:text-left">
-                    <h2 className="text-4xl font-bold">{user.displayName}</h2>
-                    <p className="text-stone-500">{user.email}</p>
+                    <h2 className="text-4xl font-extrabold text-text-main">{user.displayName}</h2>
+                    <p className="text-text-muted font-medium">{user.email}</p>
                     <div className="flex items-center justify-center md:justify-start gap-4">
-                      <div className="flex items-center gap-1 text-amber-500">
+                      <div className="flex items-center gap-1 text-secondary">
                         {[1,2,3,4,5].map(i => <Star key={i} className="w-5 h-5 fill-current" />)}
                       </div>
-                      <span className="text-stone-400 font-medium">5.0 (0 reviews)</span>
+                      <span className="text-text-muted font-bold">5.0 <span className="font-normal text-stone-400">(0 reviews)</span></span>
                     </div>
                   </div>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="space-y-6">
-                    <h3 className="text-xl font-bold">{t('yourActiveTrips')}</h3>
+                    <h3 className="text-xl font-bold text-text-main flex items-center gap-2">
+                      <Plane className="w-5 h-5 text-primary" /> {t('yourActiveTrips')}
+                    </h3>
                     {trips.filter(t => t.travelerId === user.uid).map((trip, idx) => (
                       <TripCard key={trip.id || idx} trip={trip} onAction={() => {}} t={t} />
                     ))}
                     {trips.filter(t => t.travelerId === user.uid).length === 0 && (
-                      <p className="text-stone-400 italic">{t('noActiveTrips')}</p>
+                      <div className="p-8 bg-white rounded-2xl border border-dashed border-border-subtle text-center">
+                        <p className="text-text-muted italic">{t('noActiveTrips')}</p>
+                      </div>
                     )}
                   </div>
                   <div className="space-y-6">
-                    <h3 className="text-xl font-bold">{t('yourRequests')}</h3>
+                    <h3 className="text-xl font-bold text-text-main flex items-center gap-2">
+                      <Package className="w-5 h-5 text-secondary" /> {t('yourRequests')}
+                    </h3>
                     {requests.filter(r => r.requesterId === user.uid).map((request, idx) => (
                       <RequestCard key={request.id || idx} request={request} onAction={() => {}} t={t} />
                     ))}
                     {requests.filter(r => r.requesterId === user.uid).length === 0 && (
-                      <p className="text-stone-400 italic">{t('noActiveRequests')}</p>
+                      <div className="p-8 bg-white rounded-2xl border border-dashed border-border-subtle text-center">
+                        <p className="text-text-muted italic">{t('noActiveRequests')}</p>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -765,13 +786,20 @@ export default function App() {
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-stone-200 py-12 bg-white">
-          <div className="max-w-7xl mx-auto px-4 text-center space-y-4">
+        <footer className="border-t border-border-subtle py-12 bg-white">
+          <div className="max-w-7xl mx-auto px-4 text-center space-y-6">
             <div className="flex items-center justify-center gap-2">
-              <Plane className="w-6 h-6 text-stone-900" />
-              <span className="text-lg font-bold">{t('appName')}</span>
+              <div className="bg-primary p-1.5 rounded-md">
+                <Plane className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-lg font-bold text-text-main">{t('appName')}</span>
             </div>
-            <p className="text-stone-400 text-sm">© 2026 {t('appName')}. All rights reserved.</p>
+            <div className="flex justify-center gap-8 text-sm font-medium text-text-muted">
+              <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
+              <a href="#" className="hover:text-primary transition-colors">Contact Us</a>
+            </div>
+            <p className="text-text-muted text-xs">© 2026 {t('appName')}. All rights reserved.</p>
           </div>
         </footer>
       </div>

@@ -54,10 +54,12 @@ class HomeScreen extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1C1917),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 64),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  elevation: 8,
+                  shadowColor: Theme.of(context).colorScheme.primary.withOpacity(0.4),
                 ),
                 child: Text(AppTranslations.t('findTraveler', lang), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ),
@@ -67,9 +69,9 @@ class HomeScreen extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 64),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  side: const BorderSide(color: Color(0xFFE7E5E4)),
+                  side: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.2), width: 2),
                 ),
-                child: Text(AppTranslations.t('postTrip', lang), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
+                child: Text(AppTranslations.t('postTrip', lang), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
               ),
             ],
           ),

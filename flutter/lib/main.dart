@@ -48,18 +48,28 @@ class _VoyageDeliverAppState extends State<VoyageDeliverApp> {
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF1C1917),
-            primary: const Color(0xFF1C1917),
-            surface: const Color(0xFFFAFAF9),
+            seedColor: const Color(0xFF4F46E5),
+            primary: const Color(0xFF4F46E5),
+            secondary: const Color(0xFFF59E0B),
+            surface: const Color(0xFFF8FAFC),
           ),
           textTheme: GoogleFonts.interTextTheme(),
           cardTheme: CardTheme(
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24),
-              side: const BorderSide(color: Color(0xFFE7E5E4)),
+              side: const BorderSide(color: Color(0xFFE2E8F0)),
             ),
             color: Colors.white,
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4F46E5),
+              foregroundColor: Colors.white,
+              elevation: 4,
+              shadowColor: const Color(0xFF4F46E5).withOpacity(0.3),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            ),
           ),
         ),
         home: HomeScreen(onLocaleChange: setLocale),
