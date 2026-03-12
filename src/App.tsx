@@ -41,6 +41,7 @@ import {
 } from './firebase';
 import { Trip, DeliveryRequest, UserProfile, OperationType } from './types';
 import { cn, handleFirestoreError } from './utils';
+import { translations, Language } from './translations';
 
 // --- Error Boundary ---
 interface ErrorBoundaryProps {
@@ -98,7 +99,15 @@ class ErrorBoundary extends Component<any, any> {
 
 // --- Components ---
 
-const Navbar = ({ user, onLogin, onLogout, setPage }: { user: any, onLogin: () => void, onLogout: () => void, setPage: (p: string) => void }) => {
+const Navbar = ({ user, onLogin, onLogout, setPage, language, setLanguage, t }: { 
+  user: any, 
+  onLogin: () => void, 
+  onLogout: () => void, 
+  setPage: (p: string) => void,
+  language: Language,
+  setLanguage: (l: Language) => void,
+  t: (key: keyof typeof translations['en']) => string
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -109,17 +118,29 @@ const Navbar = ({ user, onLogin, onLogout, setPage }: { user: any, onLogin: () =
             <div className="bg-stone-900 p-2 rounded-lg">
               <Plane className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-stone-900">VoyageDeliver</span>
+            <span className="text-xl font-bold tracking-tight text-stone-900">{t('appName')}</span>
           </div>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
-            <button onClick={() => setPage('trips')} className="text-sm font-medium text-stone-600 hover:text-stone-900">Find Trips</button>
-            <button onClick={() => setPage('requests')} className="text-sm font-medium text-stone-600 hover:text-stone-900">Delivery Requests</button>
+            <button onClick={() => setPage('trips')} className="text-sm font-medium text-stone-600 hover:text-stone-900">{t('findTrips')}</button>
+            <button onClick={() => setPage('requests')} className="text-sm font-medium text-stone-600 hover:text-stone-900">{t('deliveryRequests')}</button>
+            
+            <select 
+              value={language} 
+              onChange={(e) => setLanguage(e.target.value as Language)}
+              className="text-sm font-medium text-stone-600 bg-transparent border-none focus:ring-0 cursor-pointer"
+            >
+              <option value="en">English</option>
+              <option value="ar">العربية</option>
+              <option value="am">አማርኛ</option>
+              <option value="om">Oromo</option>
+            </select>
+
             {user ? (
               <div className="flex items-center gap-4">
                 <button onClick={() => setPage('post-trip')} className="px-4 py-2 bg-stone-900 text-white rounded-full text-sm font-medium hover:bg-stone-800 transition-all">
-                  Post Trip
+                  {t('postTrip')}
                 </button>
                 <div className="h-8 w-px bg-stone-200" />
                 <button onClick={() => setPage('profile')} className="flex items-center gap-2 text-sm font-medium text-stone-900">
@@ -132,13 +153,23 @@ const Navbar = ({ user, onLogin, onLogout, setPage }: { user: any, onLogin: () =
               </div>
             ) : (
               <button onClick={onLogin} className="px-6 py-2 bg-stone-900 text-white rounded-full text-sm font-medium hover:bg-stone-800 transition-all">
-                Sign In
+                {t('signIn')}
               </button>
             )}
           </div>
 
           {/* Mobile Menu Toggle */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center gap-4">
+            <select 
+              value={language} 
+              onChange={(e) => setLanguage(e.target.value as Language)}
+              className="text-sm font-medium text-stone-600 bg-transparent border-none focus:ring-0 cursor-pointer"
+            >
+              <option value="en">EN</option>
+              <option value="ar">AR</option>
+              <option value="am">AM</option>
+              <option value="om">OM</option>
+            </select>
             <button onClick={() => setIsOpen(!isOpen)} className="p-2 text-stone-600">
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -155,17 +186,17 @@ const Navbar = ({ user, onLogin, onLogout, setPage }: { user: any, onLogin: () =
             exit={{ opacity: 0, y: -20 }}
             className="md:hidden bg-white border-b border-stone-200 px-4 py-6 flex flex-col gap-4"
           >
-            <button onClick={() => { setPage('trips'); setIsOpen(false); }} className="text-left py-2 font-medium text-stone-900">Find Trips</button>
-            <button onClick={() => { setPage('requests'); setIsOpen(false); }} className="text-left py-2 font-medium text-stone-900">Delivery Requests</button>
+            <button onClick={() => { setPage('trips'); setIsOpen(false); }} className="text-left py-2 font-medium text-stone-900">{t('findTrips')}</button>
+            <button onClick={() => { setPage('requests'); setIsOpen(false); }} className="text-left py-2 font-medium text-stone-900">{t('deliveryRequests')}</button>
             {user ? (
               <>
-                <button onClick={() => { setPage('post-trip'); setIsOpen(false); }} className="text-left py-2 font-medium text-stone-900">Post Trip</button>
-                <button onClick={() => { setPage('post-request'); setIsOpen(false); }} className="text-left py-2 font-medium text-stone-900">Post Request</button>
-                <button onClick={() => { setPage('profile'); setIsOpen(false); }} className="text-left py-2 font-medium text-stone-900">Profile</button>
-                <button onClick={() => { onLogout(); setIsOpen(false); }} className="text-left py-2 font-medium text-red-600">Sign Out</button>
+                <button onClick={() => { setPage('post-trip'); setIsOpen(false); }} className="text-left py-2 font-medium text-stone-900">{t('postTrip')}</button>
+                <button onClick={() => { setPage('post-request'); setIsOpen(false); }} className="text-left py-2 font-medium text-stone-900">{t('postRequest')}</button>
+                <button onClick={() => { setPage('profile'); setIsOpen(false); }} className="text-left py-2 font-medium text-stone-900">{t('profile')}</button>
+                <button onClick={() => { onLogout(); setIsOpen(false); }} className="text-left py-2 font-medium text-red-600">{t('signOut')}</button>
               </>
             ) : (
-              <button onClick={() => { onLogin(); setIsOpen(false); }} className="w-full py-3 bg-stone-900 text-white rounded-xl font-medium">Sign In</button>
+              <button onClick={() => { onLogin(); setIsOpen(false); }} className="w-full py-3 bg-stone-900 text-white rounded-xl font-medium">{t('signIn')}</button>
             )}
           </motion.div>
         )}
@@ -178,9 +209,10 @@ interface TripCardProps {
   trip: Trip;
   onAction: (t: Trip) => void;
   key?: React.Key;
+  t: (key: keyof typeof translations['en']) => string;
 }
 
-const TripCard = ({ trip, onAction }: TripCardProps) => (
+const TripCard = ({ trip, onAction, t }: TripCardProps) => (
   <motion.div 
     layout
     initial={{ opacity: 0, y: 20 }}
@@ -194,7 +226,7 @@ const TripCard = ({ trip, onAction }: TripCardProps) => (
         </div>
         <div>
           <h3 className="font-semibold text-stone-900">{trip.travelerName}</h3>
-          <p className="text-xs text-stone-500">Traveler</p>
+          <p className="text-xs text-stone-500">{t('traveler')}</p>
         </div>
       </div>
       <div className="flex items-center gap-1 text-amber-500">
@@ -205,12 +237,12 @@ const TripCard = ({ trip, onAction }: TripCardProps) => (
 
     <div className="flex items-center gap-4 mb-6">
       <div className="flex-1">
-        <p className="text-xs uppercase tracking-wider text-stone-400 font-bold mb-1">From</p>
+        <p className="text-xs uppercase tracking-wider text-stone-400 font-bold mb-1">{t('from')}</p>
         <p className="font-medium text-stone-900 truncate">{trip.origin}</p>
       </div>
       <ArrowRight className="w-5 h-5 text-stone-300" />
       <div className="flex-1">
-        <p className="text-xs uppercase tracking-wider text-stone-400 font-bold mb-1">To</p>
+        <p className="text-xs uppercase tracking-wider text-stone-400 font-bold mb-1">{t('to')}</p>
         <p className="font-medium text-stone-900 truncate">{trip.destination}</p>
       </div>
     </div>
@@ -238,7 +270,7 @@ const TripCard = ({ trip, onAction }: TripCardProps) => (
       onClick={() => onAction(trip)}
       className="w-full py-3 bg-stone-50 text-stone-900 rounded-xl font-medium group-hover:bg-stone-900 group-hover:text-white transition-all border border-stone-200 group-hover:border-stone-900"
     >
-      Request Delivery
+      {t('requestDelivery')}
     </button>
   </motion.div>
 );
@@ -247,9 +279,10 @@ interface RequestCardProps {
   request: DeliveryRequest;
   onAction: (r: DeliveryRequest) => void;
   key?: React.Key;
+  t: (key: keyof typeof translations['en']) => string;
 }
 
-const RequestCard = ({ request, onAction }: RequestCardProps) => (
+const RequestCard = ({ request, onAction, t }: RequestCardProps) => (
   <motion.div 
     layout
     initial={{ opacity: 0, y: 20 }}
@@ -263,7 +296,7 @@ const RequestCard = ({ request, onAction }: RequestCardProps) => (
         </div>
         <div>
           <h3 className="font-semibold text-stone-900">{request.itemName}</h3>
-          <p className="text-xs text-stone-500">by {request.requesterName}</p>
+          <p className="text-xs text-stone-500">{t('by')} {request.requesterName}</p>
         </div>
       </div>
       <div className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-sm font-bold">
@@ -275,26 +308,26 @@ const RequestCard = ({ request, onAction }: RequestCardProps) => (
 
     <div className="flex items-center gap-4 mb-6">
       <div className="flex-1">
-        <p className="text-xs uppercase tracking-wider text-stone-400 font-bold mb-1">Pickup</p>
+        <p className="text-xs uppercase tracking-wider text-stone-400 font-bold mb-1">{t('pickup')}</p>
         <p className="font-medium text-stone-900 truncate">{request.origin}</p>
       </div>
       <ArrowRight className="w-5 h-5 text-stone-300" />
       <div className="flex-1">
-        <p className="text-xs uppercase tracking-wider text-stone-400 font-bold mb-1">Dropoff</p>
+        <p className="text-xs uppercase tracking-wider text-stone-400 font-bold mb-1">{t('dropoff')}</p>
         <p className="font-medium text-stone-900 truncate">{request.destination}</p>
       </div>
     </div>
 
     <div className="flex items-center gap-2 text-stone-600 mb-6">
       <Calendar className="w-4 h-4" />
-      <span className="text-sm">Deadline: {format(new Date(request.deadline), 'MMM d, yyyy')}</span>
+      <span className="text-sm">{t('deadline')}: {format(new Date(request.deadline), 'MMM d, yyyy')}</span>
     </div>
 
     <button 
       onClick={() => onAction(request)}
       className="w-full py-3 bg-stone-900 text-white rounded-xl font-medium hover:bg-stone-800 transition-all shadow-lg shadow-stone-200"
     >
-      Offer to Carry
+      {t('offerToCarry')}
     </button>
   </motion.div>
 );
@@ -308,6 +341,11 @@ export default function App() {
   const [requests, setRequests] = useState<DeliveryRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAuthReady, setIsAuthReady] = useState(false);
+  const [language, setLanguage] = useState<Language>('en');
+
+  const t = (key: keyof typeof translations['en']) => {
+    return translations[language][key] || translations['en'][key];
+  };
 
   // --- Auth & Initial Setup ---
 
@@ -457,8 +495,8 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-stone-50 font-sans text-stone-900">
-        <Navbar user={user} onLogin={handleLogin} onLogout={handleLogout} setPage={setPage} />
+      <div className="min-h-screen bg-stone-50 font-sans text-stone-900" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+        <Navbar user={user} onLogin={handleLogin} onLogout={handleLogout} setPage={setPage} language={language} setLanguage={setLanguage} t={t} />
 
         <main className="pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <AnimatePresence mode="wait">
@@ -477,25 +515,24 @@ export default function App() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="text-5xl md:text-7xl font-bold tracking-tight text-stone-900 leading-tight"
                   >
-                    Logistics, <br />
-                    <span className="text-stone-400 italic font-serif">Human-Powered.</span>
+                    {t('heroTitle')} <br />
+                    <span className="text-stone-400 italic font-serif">{t('heroSubtitle')}</span>
                   </motion.h1>
                   <p className="text-xl text-stone-600 max-w-2xl mx-auto">
-                    Connect with travelers to send items anywhere in the world. 
-                    Faster, cheaper, and more personal than traditional shipping.
+                    {t('heroDesc')}
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <button 
                       onClick={() => setPage('trips')}
                       className="px-8 py-4 bg-stone-900 text-white rounded-2xl font-semibold text-lg hover:bg-stone-800 transition-all shadow-xl shadow-stone-200 flex items-center justify-center gap-2"
                     >
-                      Find a Traveler <ArrowRight className="w-5 h-5" />
+                      {t('findTraveler')} <ArrowRight className={cn("w-5 h-5", language === 'ar' && "rotate-180")} />
                     </button>
                     <button 
                       onClick={() => setPage('post-trip')}
                       className="px-8 py-4 bg-white text-stone-900 border border-stone-200 rounded-2xl font-semibold text-lg hover:bg-stone-50 transition-all flex items-center justify-center gap-2"
                     >
-                      Post Your Trip <Plus className="w-5 h-5" />
+                      {t('postYourTrip')} <Plus className="w-5 h-5" />
                     </button>
                   </div>
                 </section>
@@ -503,9 +540,9 @@ export default function App() {
                 {/* Features */}
                 <section className="grid md:grid-cols-3 gap-8">
                   {[
-                    { icon: Plane, title: "Travel & Earn", desc: "Monetize your extra luggage space and offset your travel costs." },
-                    { icon: Package, title: "Fast Delivery", desc: "Get items delivered in days, not weeks, by leveraging existing travel routes." },
-                    { icon: CheckCircle2, title: "Trust & Safety", desc: "Verified profiles and community ratings ensure a secure experience." }
+                    { icon: Plane, title: t('travelEarn'), desc: t('travelEarnDesc') },
+                    { icon: Package, title: t('fastDelivery'), desc: t('fastDeliveryDesc') },
+                    { icon: CheckCircle2, title: t('trustSafety'), desc: t('trustSafetyDesc') }
                   ].map((f, i) => (
                     <div key={i} className="bg-white p-8 rounded-3xl border border-stone-100 shadow-sm space-y-4">
                       <div className="w-12 h-12 bg-stone-900 rounded-2xl flex items-center justify-center text-white">
@@ -529,28 +566,28 @@ export default function App() {
               >
                 <div className="flex flex-col md:flex-row justify-between items-end gap-4">
                   <div>
-                    <h2 className="text-3xl font-bold mb-2">Available Trips</h2>
-                    <p className="text-stone-500">Find a traveler heading your way.</p>
+                    <h2 className="text-3xl font-bold mb-2">{t('availableTrips')}</h2>
+                    <p className="text-stone-500">{t('findHeading')}</p>
                   </div>
                   <div className="relative w-full md:w-96">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
+                    <Search className={cn("absolute top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400", language === 'ar' ? "right-4" : "left-4")} />
                     <input 
                       type="text" 
-                      placeholder="Search destination..." 
-                      className="w-full pl-12 pr-4 py-3 bg-white border border-stone-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-stone-900/10 transition-all"
+                      placeholder={t('searchPlaceholder')} 
+                      className={cn("w-full py-3 bg-white border border-stone-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-stone-900/10 transition-all", language === 'ar' ? "pr-12 pl-4" : "pl-12 pr-4")}
                     />
                   </div>
                 </div>
 
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {trips.map((trip, idx) => (
-                    <TripCard key={trip.id || idx} trip={trip} onAction={() => setPage('post-request')} />
+                    <TripCard key={trip.id || idx} trip={trip} onAction={() => setPage('post-request')} t={t} />
                   ))}
                   {trips.length === 0 && (
                     <div className="col-span-full py-24 text-center space-y-4 bg-white rounded-3xl border border-dashed border-stone-200">
                       <Plane className="w-12 h-12 text-stone-200 mx-auto" />
-                      <p className="text-stone-400 font-medium">No active trips found. Be the first to post one!</p>
-                      <button onClick={() => setPage('post-trip')} className="text-stone-900 font-bold underline">Post a Trip</button>
+                      <p className="text-stone-400 font-medium">{t('noTrips')}</p>
+                      <button onClick={() => setPage('post-trip')} className="text-stone-900 font-bold underline">{t('postTrip')}</button>
                     </div>
                   )}
                 </div>
@@ -567,25 +604,25 @@ export default function App() {
               >
                 <div className="flex flex-col md:flex-row justify-between items-end gap-4">
                   <div>
-                    <h2 className="text-3xl font-bold mb-2">Delivery Requests</h2>
-                    <p className="text-stone-500">Help someone out and earn extra income.</p>
+                    <h2 className="text-3xl font-bold mb-2">{t('deliveryRequests')}</h2>
+                    <p className="text-stone-500">{t('fastDeliveryDesc')}</p>
                   </div>
                   <button 
                     onClick={() => setPage('post-request')}
                     className="px-6 py-3 bg-stone-900 text-white rounded-2xl font-bold flex items-center gap-2"
                   >
-                    <Plus className="w-5 h-5" /> Post Request
+                    <Plus className="w-5 h-5" /> {t('postRequest')}
                   </button>
                 </div>
 
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {requests.map((request, idx) => (
-                    <RequestCard key={request.id || idx} request={request} onAction={() => {}} />
+                    <RequestCard key={request.id || idx} request={request} onAction={() => {}} t={t} />
                   ))}
                   {requests.length === 0 && (
                     <div className="col-span-full py-24 text-center space-y-4 bg-white rounded-3xl border border-dashed border-stone-200">
                       <Package className="w-12 h-12 text-stone-200 mx-auto" />
-                      <p className="text-stone-400 font-medium">No pending requests. Check back later!</p>
+                      <p className="text-stone-400 font-medium">{t('noRequests')}</p>
                     </div>
                   )}
                 </div>
@@ -599,38 +636,38 @@ export default function App() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="max-w-2xl mx-auto bg-white rounded-3xl p-8 border border-stone-200 shadow-xl"
               >
-                <h2 className="text-3xl font-bold mb-8">Post Your Travel Route</h2>
+                <h2 className="text-3xl font-bold mb-8">{t('postTravelRoute')}</h2>
                 <form onSubmit={handlePostTrip} className="space-y-6">
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">Origin City</label>
+                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('originCity')}</label>
                       <input name="origin" required placeholder="e.g. London" className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">Destination City</label>
+                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('destinationCity')}</label>
                       <input name="destination" required placeholder="e.g. New York" className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">Travel Date</label>
+                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('travelDate')}</label>
                       <input name="date" type="date" required className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">Capacity</label>
+                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('capacity')}</label>
                       <select name="capacity" className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10">
-                        <option>Small (Envelope/Document)</option>
-                        <option>Medium (Backpack size)</option>
-                        <option>Large (Suitcase space)</option>
+                        <option value="Small">{t('small')}</option>
+                        <option value="Medium">{t('medium')}</option>
+                        <option value="Large">{t('large')}</option>
                       </select>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-stone-400">Allowed Item Types (comma separated)</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('itemTypes')}</label>
                     <input name="types" placeholder="e.g. Documents, Electronics, Gifts" className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
                   </div>
                   <button type="submit" className="w-full py-4 bg-stone-900 text-white rounded-2xl font-bold text-lg hover:bg-stone-800 transition-all">
-                    Publish Trip
+                    {t('publishTrip')}
                   </button>
                 </form>
               </motion.div>
@@ -643,38 +680,38 @@ export default function App() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="max-w-2xl mx-auto bg-white rounded-3xl p-8 border border-stone-200 shadow-xl"
               >
-                <h2 className="text-3xl font-bold mb-8">Request a Delivery</h2>
+                <h2 className="text-3xl font-bold mb-8">{t('requestDeliveryTitle')}</h2>
                 <form onSubmit={handlePostRequest} className="space-y-6">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-stone-400">Item Name</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('itemName')}</label>
                     <input name="itemName" required placeholder="e.g. MacBook Charger" className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-stone-400">Description</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('description')}</label>
                     <textarea name="description" rows={3} placeholder="Tell the traveler about the item..." className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
                   </div>
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">Pickup From</label>
+                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('pickupFrom')}</label>
                       <input name="origin" required placeholder="City" className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">Deliver To</label>
+                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('deliverTo')}</label>
                       <input name="destination" required placeholder="City" className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">Deadline</label>
+                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('deadline')}</label>
                       <input name="deadline" type="date" required className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">Commission ($)</label>
+                      <label className="text-xs font-bold uppercase tracking-wider text-stone-400">{t('commission')}</label>
                       <input name="commission" type="number" required placeholder="e.g. 25" className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/10" />
                     </div>
                   </div>
                   <button type="submit" className="w-full py-4 bg-stone-900 text-white rounded-2xl font-bold text-lg hover:bg-stone-800 transition-all">
-                    Post Request
+                    {t('postRequestBtn')}
                   </button>
                 </form>
               </motion.div>
@@ -704,21 +741,21 @@ export default function App() {
 
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="space-y-6">
-                    <h3 className="text-xl font-bold">Your Active Trips</h3>
+                    <h3 className="text-xl font-bold">{t('yourActiveTrips')}</h3>
                     {trips.filter(t => t.travelerId === user.uid).map((trip, idx) => (
-                      <TripCard key={trip.id || idx} trip={trip} onAction={() => {}} />
+                      <TripCard key={trip.id || idx} trip={trip} onAction={() => {}} t={t} />
                     ))}
                     {trips.filter(t => t.travelerId === user.uid).length === 0 && (
-                      <p className="text-stone-400 italic">No active trips.</p>
+                      <p className="text-stone-400 italic">{t('noActiveTrips')}</p>
                     )}
                   </div>
                   <div className="space-y-6">
-                    <h3 className="text-xl font-bold">Your Requests</h3>
+                    <h3 className="text-xl font-bold">{t('yourRequests')}</h3>
                     {requests.filter(r => r.requesterId === user.uid).map((request, idx) => (
-                      <RequestCard key={request.id || idx} request={request} onAction={() => {}} />
+                      <RequestCard key={request.id || idx} request={request} onAction={() => {}} t={t} />
                     ))}
                     {requests.filter(r => r.requesterId === user.uid).length === 0 && (
-                      <p className="text-stone-400 italic">No active requests.</p>
+                      <p className="text-stone-400 italic">{t('noActiveRequests')}</p>
                     )}
                   </div>
                 </div>
@@ -732,9 +769,9 @@ export default function App() {
           <div className="max-w-7xl mx-auto px-4 text-center space-y-4">
             <div className="flex items-center justify-center gap-2">
               <Plane className="w-6 h-6 text-stone-900" />
-              <span className="text-lg font-bold">VoyageDeliver</span>
+              <span className="text-lg font-bold">{t('appName')}</span>
             </div>
-            <p className="text-stone-400 text-sm">© 2026 VoyageDeliver. All rights reserved.</p>
+            <p className="text-stone-400 text-sm">© 2026 {t('appName')}. All rights reserved.</p>
           </div>
         </footer>
       </div>
