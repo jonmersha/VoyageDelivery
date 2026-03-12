@@ -1,0 +1,5 @@
+{
+  "name": "VoyageDeliver",
+  "description": "A peer-to-peer logistics platform connecting travelers with people needing items delivered across cities and borders.",
+  "requestFramePermissions": ["geolocation"]
+}

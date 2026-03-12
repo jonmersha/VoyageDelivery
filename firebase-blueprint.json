@@ -1,0 +1,84 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "bio": { "type": "string" },
+        "rating": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Trip": {
+      "title": "Trip",
+      "description": "A travel listing posted by a traveler",
+      "type": "object",
+      "properties": {
+        "travelerId": { "type": "string" },
+        "travelerName": { "type": "string" },
+        "origin": { "type": "string" },
+        "destination": { "type": "string" },
+        "travelDate": { "type": "string", "format": "date-time" },
+        "capacity": { "type": "string" },
+        "itemTypes": { "type": "array", "items": { "type": "string" } },
+        "status": { "type": "string", "enum": ["active", "completed", "cancelled"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["travelerId", "origin", "destination", "travelDate"]
+    },
+    "DeliveryRequest": {
+      "title": "DeliveryRequest",
+      "description": "A request for an item to be delivered",
+      "type": "object",
+      "properties": {
+        "requesterId": { "type": "string" },
+        "requesterName": { "type": "string" },
+        "itemName": { "type": "string" },
+        "itemDescription": { "type": "string" },
+        "origin": { "type": "string" },
+        "destination": { "type": "string" },
+        "deadline": { "type": "string", "format": "date-time" },
+        "commission": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "matched", "in-transit", "delivered", "cancelled"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["requesterId", "itemName", "origin", "destination"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Chat message between users",
+      "type": "object",
+      "properties": {
+        "chatId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["chatId", "senderId", "text"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/trips/{tripId}": {
+      "schema": "Trip",
+      "description": "Travel listings"
+    },
+    "/requests/{requestId}": {
+      "schema": "DeliveryRequest",
+      "description": "Delivery requests"
+    },
+    "/chats/{chatId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Messages within a chat"
+    }
+  }
+}
