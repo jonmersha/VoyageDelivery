@@ -21,12 +21,18 @@ export interface Trip {
   createdAt: any;
 }
 
+export interface Item {
+  name: string;
+  description: string;
+  imageUrl?: string;
+  quantity: number;
+}
+
 export interface DeliveryRequest {
   id?: string;
   requesterId: string;
   requesterName: string;
-  itemName: string;
-  itemDescription: string;
+  items: Item[];
   origin: string;
   destination: string;
   deadline: any;

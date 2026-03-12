@@ -34,13 +34,24 @@
     },
     "DeliveryRequest": {
       "title": "DeliveryRequest",
-      "description": "A request for an item to be delivered",
+      "description": "A request for items to be delivered",
       "type": "object",
       "properties": {
         "requesterId": { "type": "string" },
         "requesterName": { "type": "string" },
-        "itemName": { "type": "string" },
-        "itemDescription": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "imageUrl": { "type": "string" },
+              "quantity": { "type": "number" }
+            },
+            "required": ["name", "quantity"]
+          }
+        },
         "origin": { "type": "string" },
         "destination": { "type": "string" },
         "deadline": { "type": "string", "format": "date-time" },
@@ -48,7 +59,7 @@
         "status": { "type": "string", "enum": ["pending", "matched", "in-transit", "delivered", "cancelled"] },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["requesterId", "itemName", "origin", "destination"]
+      "required": ["requesterId", "items", "origin", "destination"]
     },
     "Message": {
       "title": "Message",

@@ -297,7 +297,9 @@ const RequestCard = ({ request, onAction, t }: RequestCardProps) => (
           {request.requesterName[0]}
         </div>
         <div>
-          <h3 className="font-semibold text-text-main">{request.itemName}</h3>
+          <h3 className="font-semibold text-text-main truncate max-w-[150px]">
+            {request.items[0]?.name}{request.items.length > 1 ? ` +${request.items.length - 1}` : ''}
+          </h3>
           <p className="text-xs text-text-muted">{t('by')} {request.requesterName}</p>
         </div>
       </div>
@@ -306,7 +308,29 @@ const RequestCard = ({ request, onAction, t }: RequestCardProps) => (
       </div>
     </div>
 
-    <p className="text-sm text-text-muted mb-6 line-clamp-2 leading-relaxed">{request.itemDescription}</p>
+    <div className="space-y-3 mb-6">
+      {request.items.slice(0, 2).map((item, i) => (
+        <div key={i} className="flex items-center gap-3 p-2 bg-bg-main rounded-xl border border-border-subtle">
+          {item.imageUrl ? (
+            <img src={item.imageUrl} alt={item.name} className="w-10 h-10 rounded-lg object-cover" referrerPolicy="no-referrer" />
+          ) : (
+            <div className="w-10 h-10 rounded-lg bg-secondary/5 flex items-center justify-center">
+              <Package className="w-5 h-5 text-secondary/40" />
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-text-main truncate">{item.name}</p>
+            <p className="text-xs text-text-muted truncate">{item.description}</p>
+          </div>
+          <div className="text-xs font-bold text-secondary bg-secondary/10 px-2 py-1 rounded-md">
+            x{item.quantity}
+          </div>
+        </div>
+      ))}
+      {request.items.length > 2 && (
+        <p className="text-xs text-center text-text-muted font-medium">+{request.items.length - 2} {t('items')}...</p>
+      )}
+    </div>
 
     <div className="flex items-center gap-4 mb-6">
       <div className="flex-1">
@@ -346,6 +370,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [language, setLanguage] = useState<Language>('en');
+  const [requestItems, setRequestItems] = useState<any[]>([{ name: '', description: '', quantity: 1, imageUrl: '' }]);
 
   const t = (key: keyof typeof translations['en']) => {
     return translations[language][key] || translations['en'][key];
@@ -462,11 +487,15 @@ export default function App() {
     e.preventDefault();
     if (!user) return;
     const formData = new FormData(e.currentTarget);
+    
+    // Validate items
+    const validItems = requestItems.filter(item => item.name.trim() !== '');
+    if (validItems.length === 0) return;
+
     const requestData = {
       requesterId: user.uid,
       requesterName: user.displayName || 'Anonymous',
-      itemName: formData.get('itemName') as string,
-      itemDescription: formData.get('description') as string,
+      items: validItems,
       origin: formData.get('origin') as string,
       destination: formData.get('destination') as string,
       deadline: formData.get('deadline') as string,
@@ -477,6 +506,7 @@ export default function App() {
 
     try {
       await addDoc(collection(db, 'requests'), requestData);
+      setRequestItems([{ name: '', description: '', quantity: 1, imageUrl: '' }]);
       setPage('requests');
     } catch (err) {
       handleFirestoreError(err, OperationType.CREATE, 'requests');
@@ -689,33 +719,118 @@ export default function App() {
                 className="max-w-2xl mx-auto bg-white rounded-3xl p-8 border border-border-subtle shadow-xl"
               >
                 <h2 className="text-3xl font-bold mb-8 text-text-main">{t('requestDeliveryTitle')}</h2>
-                <form onSubmit={handlePostRequest} className="space-y-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-text-muted">{t('itemName')}</label>
-                    <input name="itemName" required placeholder="e.g. MacBook Charger" className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                <form onSubmit={handlePostRequest} className="space-y-8">
+                  {/* Items List */}
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <label className="text-sm font-bold text-text-main uppercase tracking-wider">{t('items')}</label>
+                      <button 
+                        type="button"
+                        onClick={() => setRequestItems([...requestItems, { name: '', description: '', quantity: 1, imageUrl: '' }])}
+                        className="text-xs font-bold text-secondary hover:text-secondary-hover flex items-center gap-1"
+                      >
+                        <Plus className="w-4 h-4" /> {t('addItem')}
+                      </button>
+                    </div>
+                    
+                    <div className="space-y-6">
+                      {requestItems.map((item, index) => (
+                        <div key={index} className="p-6 bg-bg-main rounded-2xl border border-border-subtle space-y-4 relative group">
+                          {requestItems.length > 1 && (
+                            <button 
+                              type="button"
+                              onClick={() => setRequestItems(requestItems.filter((_, i) => i !== index))}
+                              className="absolute top-4 right-4 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <X className="w-5 h-5" />
+                            </button>
+                          )}
+                          
+                          <div className="grid grid-cols-3 gap-4">
+                            <div className="col-span-2 space-y-2">
+                              <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted">{t('itemName')}</label>
+                              <input 
+                                value={item.name}
+                                onChange={(e) => {
+                                  const newItems = [...requestItems];
+                                  newItems[index].name = e.target.value;
+                                  setRequestItems(newItems);
+                                }}
+                                required 
+                                placeholder="e.g. MacBook" 
+                                className="w-full px-4 py-2 bg-white border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary/20" 
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted">{t('quantity')}</label>
+                              <input 
+                                type="number"
+                                min="1"
+                                value={item.quantity}
+                                onChange={(e) => {
+                                  const newItems = [...requestItems];
+                                  newItems[index].quantity = Number(e.target.value);
+                                  setRequestItems(newItems);
+                                }}
+                                required 
+                                className="w-full px-4 py-2 bg-white border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary/20" 
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted">{t('description')}</label>
+                            <textarea 
+                              value={item.description}
+                              onChange={(e) => {
+                                const newItems = [...requestItems];
+                                newItems[index].description = e.target.value;
+                                setRequestItems(newItems);
+                              }}
+                              rows={2} 
+                              placeholder="Details about this item..." 
+                              className="w-full px-4 py-2 bg-white border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary/20" 
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted">{t('imageUrl')}</label>
+                            <input 
+                              value={item.imageUrl}
+                              onChange={(e) => {
+                                const newItems = [...requestItems];
+                                newItems[index].imageUrl = e.target.value;
+                                setRequestItems(newItems);
+                              }}
+                              placeholder="https://example.com/image.jpg" 
+                              className="w-full px-4 py-2 bg-white border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary/20" 
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-text-muted">{t('description')}</label>
-                    <textarea name="description" rows={3} placeholder="Tell the traveler about the item..." className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20" />
-                  </div>
+
+                  <div className="h-px bg-border-subtle" />
+
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-xs font-bold uppercase tracking-wider text-text-muted">{t('pickupFrom')}</label>
-                      <input name="origin" required placeholder="City" className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                      <input name="origin" required placeholder="City" className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary/20" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-xs font-bold uppercase tracking-wider text-text-muted">{t('deliverTo')}</label>
-                      <input name="destination" required placeholder="City" className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                      <input name="destination" required placeholder="City" className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary/20" />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-xs font-bold uppercase tracking-wider text-text-muted">{t('deadline')}</label>
-                      <input name="deadline" type="date" required className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                      <input name="deadline" type="date" required className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary/20" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-xs font-bold uppercase tracking-wider text-text-muted">{t('commission')}</label>
-                      <input name="commission" type="number" required placeholder="e.g. 25" className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                      <input name="commission" type="number" required placeholder="e.g. 25" className="w-full px-4 py-3 bg-bg-main border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary/20" />
                     </div>
                   </div>
                   <button type="submit" className="w-full py-4 bg-secondary text-white rounded-2xl font-bold text-lg hover:bg-secondary-hover transition-all shadow-lg shadow-secondary/20">
