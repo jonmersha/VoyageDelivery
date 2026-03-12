@@ -1,0 +1,29 @@
+name: voyage_deliver
+description: A peer-to-peer logistics and travel delivery platform.
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.16.0
+  cloud_firestore: ^4.14.0
+  google_sign_in: ^6.1.6
+  provider: ^6.1.1
+  intl: ^0.19.0
+  google_fonts: ^6.1.0
+  lucide_icons: ^0.320.0
+  animations: ^2.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
