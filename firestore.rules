@@ -41,20 +41,20 @@ service cloud.firestore {
 
     function isValidTrip(data) {
       return data.keys().hasAll(['travelerId', 'origin', 'destination', 'travelDate', 'status']) &&
-             data.travelerId == request.auth.uid &&
+             data.travelerId is string &&
              data.origin is string && data.origin.size() > 0 && data.origin.size() < 100 &&
              data.destination is string && data.destination.size() > 0 && data.destination.size() < 100 &&
              data.status in ['active', 'completed', 'cancelled'];
     }
 
     function isValidRequest(data) {
-      return data.keys().hasAll(['requesterId', 'itemName', 'origin', 'destination', 'status', 'commission']) &&
-             data.requesterId == request.auth.uid &&
-             data.itemName is string && data.itemName.size() > 0 && data.itemName.size() < 100 &&
+      return data.keys().hasAll(['requesterId', 'items', 'origin', 'destination', 'status', 'commission']) &&
+             data.requesterId is string &&
+             data.items is list &&
              data.origin is string && data.origin.size() > 0 && data.origin.size() < 100 &&
              data.destination is string && data.destination.size() > 0 && data.destination.size() < 100 &&
              data.commission is number && data.commission >= 0 &&
-             data.status in ['pending', 'matched', 'in-transit', 'delivered', 'cancelled'];
+             data.status in ['pending', 'accepted', 'matched', 'in-transit', 'delivered', 'cancelled'];
     }
 
     // --- Match Rules ---
@@ -67,15 +67,27 @@ service cloud.firestore {
 
     match /trips/{tripId} {
       allow read: if true;
-      allow create: if isAuthenticated() && isValidTrip(request.resource.data);
-      allow update: if (isAuthenticated() && resource.data.travelerId == request.auth.uid && isValidTrip(request.resource.data)) || isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.travelerId == request.auth.uid && isValidTrip(request.resource.data);
+      allow update: if (isAuthenticated() && (
+        (resource.data.travelerId == request.auth.uid && isValidTrip(request.resource.data)) ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
+         request.resource.data.participants.size() == resource.data.participants.size() + 1 &&
+         request.resource.data.participants.hasAll(resource.data.participants) &&
+         request.auth.uid in request.resource.data.participants)
+      )) || isAdmin();
       allow delete: if isAdmin();
     }
 
     match /requests/{requestId} {
       allow read: if true;
-      allow create: if isAuthenticated() && isValidRequest(request.resource.data);
-      allow update: if (isAuthenticated() && resource.data.requesterId == request.auth.uid && isValidRequest(request.resource.data)) || isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.requesterId == request.auth.uid && isValidRequest(request.resource.data);
+      allow update: if (isAuthenticated() && (
+        (resource.data.requesterId == request.auth.uid && isValidRequest(request.resource.data)) ||
+        (resource.data.status == 'pending' && 
+         request.resource.data.status == 'accepted' &&
+         request.resource.data.acceptedBy == request.auth.uid &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'acceptedBy', 'acceptedByName', 'acceptedAt']))
+      )) || isAdmin();
       allow delete: if isAdmin();
     }
 

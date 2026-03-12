@@ -27,6 +27,7 @@
         "travelDate": { "type": "string", "format": "date-time" },
         "capacity": { "type": "string" },
         "itemTypes": { "type": "array", "items": { "type": "string" } },
+        "participants": { "type": "array", "items": { "type": "string" } },
         "status": { "type": "string", "enum": ["active", "completed", "cancelled"] },
         "createdAt": { "type": "string", "format": "date-time" }
       },
@@ -56,7 +57,10 @@
         "destination": { "type": "string" },
         "deadline": { "type": "string", "format": "date-time" },
         "commission": { "type": "number" },
-        "status": { "type": "string", "enum": ["pending", "matched", "in-transit", "delivered", "cancelled"] },
+        "status": { "type": "string", "enum": ["pending", "accepted", "matched", "in-transit", "delivered", "cancelled"] },
+        "acceptedBy": { "type": "string" },
+        "acceptedByName": { "type": "string" },
+        "acceptedAt": { "type": "string", "format": "date-time" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["requesterId", "items", "origin", "destination"]
