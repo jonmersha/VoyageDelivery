@@ -27,8 +27,11 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() &&
-        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
-          (request.auth.token.email == "jonmersha@gmail.com" && request.auth.token.email_verified == true));
+        (
+          (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', 'user') == 'admin') ||
+          (request.auth.token.email == "jonmersha@gmail.com" && request.auth.token.email_verified == true)
+        );
     }
 
     function isValidUser(data) {
@@ -71,8 +74,8 @@ service cloud.firestore {
       allow update: if (isAuthenticated() && (
         (resource.data.travelerId == request.auth.uid && isValidTrip(request.resource.data)) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-         request.resource.data.participants.size() == resource.data.participants.size() + 1 &&
-         request.resource.data.participants.hasAll(resource.data.participants) &&
+         request.resource.data.participants.size() == (resource.data.get('participants', []).size() + 1) &&
+         request.resource.data.participants.hasAll(resource.data.get('participants', [])) &&
          request.auth.uid in request.resource.data.participants)
       )) || isAdmin();
       allow delete: if isAdmin();

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:provider/provider.dart';
 import '../models/delivery_request.dart';
 import '../l10n/translations.dart';
+import '../services/firebase_service.dart';
 import 'location_info.dart';
 
 class RequestCard extends StatelessWidget {
@@ -11,6 +13,9 @@ class RequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lang = Localizations.localeOf(context).languageCode;
+    final firebase = Provider.of<FirebaseService>(context, listen: false);
+    final user = firebase.currentUser;
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -92,6 +97,19 @@ class RequestCard extends StatelessWidget {
                 Expanded(child: LocationInfo(label: AppTranslations.t('dropoff', lang), city: request.destination)),
               ],
             ),
+            const SizedBox(height: 20),
+            if (user != null && user.uid != request.requesterId && request.status == 'pending')
+              ElevatedButton(
+                onPressed: () async {
+                  await firebase.acceptRequest(request.id);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Offered to carry!')));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFF59E0B),
+                  minimumSize: const Size(double.infinity, 48),
+                ),
+                child: Text(AppTranslations.t('offerToCarry', lang)),
+              ),
           ],
         ),
       ),

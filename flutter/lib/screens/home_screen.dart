@@ -9,7 +9,8 @@ import 'requests_tab.dart';
 import 'profile_tab.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final Function(Locale) onLocaleChange;
+  const HomeScreen({super.key, required this.onLocaleChange});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -27,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
       HomeTab(lang: lang),
       TripsTab(lang: lang, firebase: firebase),
       RequestsTab(lang: lang, firebase: firebase),
-      ProfileTab(lang: lang, firebase: firebase),
+      ProfileTab(lang: lang, firebase: firebase, onLocaleChange: widget.onLocaleChange),
     ];
 
     return Scaffold(

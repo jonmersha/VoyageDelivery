@@ -37,6 +37,16 @@ export const Profile = ({ user, trips, requests, t }: ProfileProps) => (
           </div>
           <span className="text-text-muted font-bold">5.0 <span className="font-normal text-stone-400">(0 reviews)</span></span>
         </div>
+        <div className="flex gap-8 pt-4">
+          <div className="text-center md:text-left">
+            <p className="text-2xl font-black text-primary">{trips.filter(t => t.travelerId === user.uid).length}</p>
+            <p className="text-xs uppercase tracking-widest font-bold text-text-muted">{t('yourActiveTrips')}</p>
+          </div>
+          <div className="text-center md:text-left">
+            <p className="text-2xl font-black text-secondary">{requests.filter(r => r.requesterId === user.uid).length}</p>
+            <p className="text-xs uppercase tracking-widest font-bold text-text-muted">{t('yourRequests')}</p>
+          </div>
+        </div>
       </div>
     </div>
 

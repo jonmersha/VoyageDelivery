@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:provider/provider.dart';
 import '../models/trip.dart';
 import '../l10n/translations.dart';
+import '../services/firebase_service.dart';
 import 'icon_info.dart';
 import 'location_info.dart';
 
@@ -13,6 +15,9 @@ class TripCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lang = Localizations.localeOf(context).languageCode;
+    final firebase = Provider.of<FirebaseService>(context, listen: false);
+    final user = firebase.currentUser;
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -68,6 +73,16 @@ class TripCard extends StatelessWidget {
                 child: Text(type.toUpperCase(), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF4F46E5), letterSpacing: 0.5)),
               )).toList(),
             ),
+            const SizedBox(height: 20),
+            if (user != null && user.uid != trip.travelerId)
+              ElevatedButton(
+                onPressed: () async {
+                  await firebase.joinTrip(trip.id);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Joined trip!')));
+                },
+                style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
+                child: Text(AppTranslations.t('requestDelivery', lang)),
+              ),
           ],
         ),
       ),

@@ -5,11 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:voyage_deliver/services/firebase_service.dart';
 import 'package:voyage_deliver/l10n/translations.dart';
 import 'package:voyage_deliver/screens/home_screen.dart';
+import 'package:voyage_deliver/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Note: You must initialize Firebase with your own options locally
-  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const VoyageDeliverApp());
 }
 

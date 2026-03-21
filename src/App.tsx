@@ -139,7 +139,7 @@ export default function App() {
       travelerName: user.displayName || 'Anonymous',
       origin: formData.get('origin') as string,
       destination: formData.get('destination') as string,
-      travelDate: formData.get('date') as string,
+      travelDate: new Date(formData.get('date') as string),
       capacity: formData.get('capacity') as string,
       itemTypes: (formData.get('types') as string).split(',').map(s => s.trim()),
       status: 'active',
@@ -167,7 +167,7 @@ export default function App() {
       items: validItems,
       origin: formData.get('origin') as string,
       destination: formData.get('destination') as string,
-      deadline: formData.get('deadline') as string,
+      deadline: new Date(formData.get('deadline') as string),
       commission: Number(formData.get('commission')),
       status: 'pending',
       createdAt: serverTimestamp()

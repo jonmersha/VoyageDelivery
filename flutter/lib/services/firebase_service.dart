@@ -31,6 +31,28 @@ class FirebaseService extends ChangeNotifier {
             .toList());
   }
 
+  Stream<List<Trip>> getUserTrips(String uid) {
+    return _db
+        .collection('trips')
+        .where('travelerId', isEqualTo: uid)
+        .where('status', isEqualTo: 'active')
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => Trip.fromMap(doc.id, doc.data()))
+            .toList());
+  }
+
+  Stream<List<DeliveryRequest>> getUserRequests(String uid) {
+    return _db
+        .collection('requests')
+        .where('requesterId', isEqualTo: uid)
+        .where('status', isEqualTo: 'pending')
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => DeliveryRequest.fromMap(doc.id, doc.data()))
+            .toList());
+  }
+
   Future<void> postTrip(Map<String, dynamic> data) async {
     await _db.collection('trips').add({
       ...data,
@@ -65,8 +87,13 @@ class FirebaseService extends ChangeNotifier {
   }
 
   Future<void> signIn() async {
-    // Google Sign In implementation would go here
-    notifyListeners();
+    try {
+      GoogleAuthProvider googleProvider = GoogleAuthProvider();
+      await _auth.signInWithPopup(googleProvider);
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error signing in: $e");
+    }
   }
 
   Future<void> signOut() async {
